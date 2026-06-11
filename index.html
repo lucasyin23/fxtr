@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FXTR — Fixture Apparel</title>
+<meta name="description" content="FXTR — Fixture Apparel. Drop 01 coming soon.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --ink:#f4f4f4;
+    --muted:#7c7c7c;
+    --line:rgba(255,255,255,0.14);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Mono',monospace;
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:32px 24px;
+    overflow-x:hidden;
+  }
+  .wrap{display:flex;flex-direction:column;align-items:center;gap:30px;max-width:560px;width:100%}
+
+  .logo{
+    width:min(72vw,360px);
+    opacity:0;
+    animation:rise .9s cubic-bezier(.2,.7,.2,1) .1s forwards;
+  }
+
+  .drop{
+    font-family:'Archivo',sans-serif;
+    font-weight:900;
+    font-size:clamp(40px,11vw,76px);
+    letter-spacing:.02em;
+    line-height:.9;
+    opacity:0;
+    animation:rise .9s cubic-bezier(.2,.7,.2,1) .25s forwards;
+  }
+
+  .status{
+    display:flex;align-items:center;gap:14px;
+    color:var(--muted);
+    font-size:13px;letter-spacing:.42em;text-indent:.42em;
+    text-transform:uppercase;
+    opacity:0;
+    animation:rise .9s cubic-bezier(.2,.7,.2,1) .4s forwards;
+  }
+  .status .ln{height:1px;width:34px;background:var(--line)}
+  /* screw-slot mark — a nod to "fixture" */
+  .screw{width:13px;height:13px;border:1.5px solid var(--muted);border-radius:50%;position:relative;flex:none}
+  .screw::before{content:"";position:absolute;top:50%;left:2px;right:2px;height:1.5px;background:var(--muted);transform:translateY(-50%)}
+
+  form{
+    display:flex;width:100%;max-width:380px;border:1px solid var(--line);border-radius:6px;overflow:hidden;
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) .55s forwards;
+  }
+  input{
+    flex:1;background:transparent;border:0;outline:0;color:var(--ink);
+    font-family:'Space Mono',monospace;font-size:14px;padding:14px 16px;
+  }
+  input::placeholder{color:var(--muted)}
+  button{
+    background:var(--ink);color:var(--bg);border:0;cursor:pointer;
+    font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;
+    padding:0 20px;text-transform:uppercase;transition:opacity .2s;
+  }
+  button:hover{opacity:.82}
+  .msg{font-size:13px;color:var(--muted);min-height:18px;letter-spacing:.04em}
+
+  footer{
+    display:flex;flex-direction:column;gap:8px;align-items:center;
+    color:var(--muted);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    opacity:0;animation:rise .9s cubic-bezier(.2,.7,.2,1) .7s forwards;
+  }
+  footer a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px;transition:opacity .2s}
+  footer a:hover{opacity:.7}
+
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @media (prefers-reduced-motion:reduce){
+    .logo,.drop,.status,form,footer{animation:none;opacity:1}
+  }
+  :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <img class="logo" src="logo_white.png" alt="FXTR — Fixture Apparel">
+
+    <h1 class="drop">DROP 01</h1>
+
+    <div class="status">
+      <span class="ln"></span>
+      <span class="screw" aria-hidden="true"></span>
+      <span>Coming soon</span>
+      <span class="screw" aria-hidden="true"></span>
+      <span class="ln"></span>
+    </div>
+
+    <!--
+      EMAIL SIGNUP (optional):
+      To collect emails, create a free form at https://formspree.io,
+      then paste your endpoint into the action="" below (replace YOUR_FORM_ID).
+      Don't want a signup? Delete this whole <form> block and the <p class="msg"> line.
+    -->
+    <form id="notify" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address">
+      <button type="submit">Notify me</button>
+    </form>
+    <p class="msg" id="msg"></p>
+
+    <footer>
+      <div>Fixture Apparel · Toronto · Est. 2026</div>
+      <a href="https://instagram.com/wearfxtr" target="_blank" rel="noopener">@wearfxtr</a>
+    </footer>
+  </main>
+
+<script>
+  const form = document.getElementById('notify');
+  const msg = document.getElementById('msg');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (form.action.includes('YOUR_FORM_ID')) {
+      msg.textContent = 'Signup not connected yet — see the note in the code.';
+      return;
+    }
+    msg.textContent = 'Sending…';
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) { form.reset(); msg.textContent = "You're on the list. See you at Drop 01."; }
+      else { msg.textContent = 'Something went wrong — try again.'; }
+    } catch { msg.textContent = 'Something went wrong — try again.'; }
+  });
+</script>
+</body>
+</html>
