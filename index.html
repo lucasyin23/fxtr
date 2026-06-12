@@ -82,6 +82,20 @@
   button:hover{opacity:.82}
   .msg{font-size:13px;color:var(--muted);min-height:18px;letter-spacing:.04em}
 
+  .done{
+    display:none;flex-direction:column;align-items:center;gap:12px;
+    width:100%;max-width:380px;padding:22px 18px;
+    border:1px solid var(--line);border-radius:8px;
+  }
+  .done.show{display:flex;animation:rise .5s cubic-bezier(.2,.7,.2,1) forwards}
+  .done .check{
+    width:42px;height:42px;border-radius:50%;border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .done .check svg{width:20px;height:20px}
+  .done h2{font-family:'Archivo',sans-serif;font-weight:900;font-size:20px;letter-spacing:.02em;color:var(--ink)}
+  .done p{font-size:13px;color:var(--muted);letter-spacing:.03em;line-height:1.6;text-align:center}
+
   footer{
     display:flex;flex-direction:column;gap:8px;align-items:center;
     color:var(--muted);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
@@ -111,17 +125,20 @@
       <span class="ln"></span>
     </div>
 
-    <!--
-      EMAIL SIGNUP (optional):
-      To collect emails, create a free form at https://formspree.io,
-      then paste your endpoint into the action="" below (replace YOUR_FORM_ID).
-      Don't want a signup? Delete this whole <form> block and the <p class="msg"> line.
-    -->
-    <form id="notify" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-      <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address">
+    <!-- Signup connected to MailerLite (FXTR Signups group) -->
+    <form id="notify" action="https://assets.mailerlite.com/jsonp/2424719/forms/190028967539902284/subscribe" method="post">
+      <input type="email" name="fields[email]" placeholder="your@email.com" required aria-label="Email address">
       <button type="submit">Notify me</button>
     </form>
     <p class="msg" id="msg"></p>
+
+    <div class="done" id="done" role="status">
+      <span class="check" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f4f4f4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+      </span>
+      <h2>You're on the list</h2>
+      <p>We'll email you the moment Drop 01 goes live.<br>Keep an eye on your inbox.</p>
+    </div>
 
     <footer>
       <div>Fixture Apparel · Toronto · Est. 2026</div>
@@ -132,22 +149,34 @@
 <script>
   const form = document.getElementById('notify');
   const msg = document.getElementById('msg');
+  const done = document.getElementById('done');
+
+  function showSuccess(){
+    form.style.display = 'none';
+    msg.textContent = '';
+    done.classList.add('show');
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (form.action.includes('YOUR_FORM_ID')) {
-      msg.textContent = 'Signup not connected yet — see the note in the code.';
-      return;
-    }
+    const email = form.querySelector('input[type=email]').value.trim();
+    if (!email) return;
     msg.textContent = 'Sending…';
+
+    const data = new FormData();
+    data.append('fields[email]', email);
+    data.append('ml-submit', '1');
+    data.append('anticsrf', 'true');
+
     try {
-      const res = await fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { 'Accept': 'application/json' }
-      });
-      if (res.ok) { form.reset(); msg.textContent = "You're on the list. See you at Drop 01."; }
-      else { msg.textContent = 'Something went wrong — try again.'; }
-    } catch { msg.textContent = 'Something went wrong — try again.'; }
+      // MailerLite's endpoint is cross-origin (JSONP); no-cors lets the
+      // signup go through. We can't read the response, so we confirm
+      // optimistically once the request completes.
+      await fetch(form.action, { method: 'POST', body: data, mode: 'no-cors' });
+      showSuccess();
+    } catch {
+      msg.textContent = 'Something went wrong — try again.';
+    }
   });
 </script>
 </body>
